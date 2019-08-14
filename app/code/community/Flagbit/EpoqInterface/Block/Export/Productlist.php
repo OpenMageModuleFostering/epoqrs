@@ -18,7 +18,7 @@
 class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterface_Block_Abstract
 {
     
-
+    
     /**
      * Product Type Instances singletons
      *
@@ -33,25 +33,25 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
      */
     protected function _toHtml()
     { 
-        // create XML Object
-        $xmlObj = new DOMDocument("1.0", "UTF-8");
-        $xmlObj->formatOutput = true;
-        
-        // add RSS Element and Namespace
-        $elemRss = $xmlObj->createElement( 'rss' );
-        $elemRss->setAttribute ( 'version' , '2.0' );
-        $elemRss->setAttribute ( 'xmlns:g' , 'http://base.google.com/ns/1.0' );
-        $elemRss->setAttribute ( 'xmlns:e' , 'http://base.google.com/cns/1.0' );
-        $elemRss->setAttribute ( 'xmlns:c' , 'http://base.google.com/cns/1.0' );
-        $elemRss->setAttribute ( 'magento' , Mage::getVersion() );
-        $elemRss->setAttribute ( 'epoq' , (string) Mage::getConfig()->getNode()->modules->Flagbit_EpoqInterface->version );
-        $xmlObj->appendChild( $elemRss );
-        
-        // add Channel Element
-        $elemChannel = $xmlObj->createElement( 'channel' );
-        $elemRss->appendChild( $elemChannel );
-              
-        // get Products
+		// create XML Object
+       	$xmlObj = new DOMDocument("1.0", "UTF-8");
+		$xmlObj->formatOutput = true;
+		
+		// add RSS Element and Namespace
+		$elemRss = $xmlObj->createElement( 'rss' );
+		$elemRss->setAttribute ( 'version' , '2.0' );
+		$elemRss->setAttribute ( 'xmlns:g' , 'http://base.google.com/ns/1.0' );
+		$elemRss->setAttribute ( 'xmlns:e' , 'http://base.google.com/cns/1.0' );
+		$elemRss->setAttribute ( 'xmlns:c' , 'http://base.google.com/cns/1.0' );
+		$elemRss->setAttribute ( 'magento' , Mage::getVersion() );
+		$elemRss->setAttribute ( 'epoq' , (string) Mage::getConfig()->getNode()->modules->Flagbit_EpoqInterface->version );
+		$xmlObj->appendChild( $elemRss );
+		
+		// add Channel Element
+		$elemChannel = $xmlObj->createElement( 'channel' );
+		$elemRss->appendChild( $elemChannel );
+  			
+		// get Products
         $product = Mage::getModel('catalog/product');
         
         /*@var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
@@ -63,12 +63,12 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
                 'product_id='.Mage::helper('epoqinterface')->getIdFieldName(),
                 '{{table}}.stock_id=1',
                 'left') 
-            ->addAttributeToSelect(array('name', 'price'), 'inner')
-            ->addAttributeToSelect(array('short_description', 'image'), 'left');
-
+            ->addAttributeToSelect(array('name', 'short_description', 'price', 'image'), 'inner');
+            //->addAttributeToSelect(array('special_price', 'special_from_date', 'special_to_date'), 'left');
+            
         // split Export in Parts 
         if($this->getRequest()->getParam('part')){    
-            $products->getSelect()->limitPage($this->getRequest()->getParam('part', 1), $this->getRequest()->getParam('limit', 1000));
+        	$products->getSelect()->limitPage($this->getRequest()->getParam('part', 1), $this->getRequest()->getParam('limit', 1000));
         }
         
         Mage::helper('epoqinterface/debug')->log('Export select query: '.(string) $products->getSelect());
@@ -88,7 +88,7 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
             $this->addNewItemXmlCallback(array('product' => $product, 'xmlObj' => $xmlObj));
         }
         
-        return $xmlObj->saveXML();    
+        return $xmlObj->saveXML();	
     }    
 
     /**
@@ -103,32 +103,27 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
         $this->setData('product', $product);
         
         // reset time limit
-        @set_time_limit(30);        
+        @set_time_limit(30);		
      
         /*@var $product Mage_Catalog_Model_Product */
-        $product->load($product->getId());
+        $product->setData($args['row']);
+        $product->load($product->getId());     
         
         $this->setProductTypeInstance($product);        
         
         $parentProduct = array();
         if(method_exists($product, 'getParentProductIds')){
-            $product->loadParentProductIds();
-            $parentProduct = $product->getParentProductIds();
+        	$product->loadParentProductIds();
+        	$parentProduct = $product->getParentProductIds();
         } elseif (method_exists($product, 'getParentIdsByChild')) {
             $objConfigurableProduct = Mage::getModel('catalog/product_type_configurable');
             $parentProduct = $objConfigurableProduct->getParentIdsByChild($product);
         }
 
-        // get Productcategories
-        $categories = $product->getCategoryCollection()->load();
-
-        $categoryPaths = array();
-        // get path for each category
-        foreach ($categories as $category) {
-            $this->setData('category', $category);
-            $categoryPaths[] = implode('>', $this->getCategoryPath(true));
-        }
-
+        // get Productcategory
+        $category = $product->getCategoryCollection()->load()->getFirstItem();
+        $this->setData('category', $category);
+    
         /*@var $xmlObj DOMDocument*/
         $xmlObj = $args['xmlObj'];
 
@@ -136,55 +131,50 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
         $elemItem = $xmlObj->createElement('item');
 
         $data = array(
-            'title'          => $product->getName(),
-            'link'           => $product->getProductUrl(),
+            'title'         => $product->getName(),
+            'link'          => $product->getProductUrl(),        
         
-            // g Namespace
-            'g:entity_id'    => $product->getId(),
-            'g:id'           => $product->getData(Mage::helper('epoqinterface')->getIdFieldName()),
-            'description'    => $product->getShortDescription(),
-            'g:price'        => $this->getProductPrice($product),
-            'g:image_link'   => (string) $this->helper('catalog/image')->init($product, 'image'),
-            'g:product_type' => implode('|', $categoryPaths),
-            'g:brand'        => is_object($this->getProduct()->getResource()
-                ->getAttribute('manufacturer')) ? $this->getProduct()->getAttributeText('manufacturer') : '',
-            'g:upc'          => $this->getProduct()->getSku(),
-            'g:quantity'     => $this->getProduct()->isSaleable(),
-            'g:visibility'   => $this->getProduct()->getVisibility(),
+        	// g Namespace
+        	'g:entity_id'	=> $product->getId(),
+        	'g:id'			=> $product->getData(Mage::helper('epoqinterface')->getIdFieldName()),
+            'description'   => $product->getShortDescription(),
+    		'g:price'		=> $this->getProductPrice($product),
+        	'g:image_link'		=> (string) $this->helper('catalog/image')->init($product, 'image'),
+        	'g:product_type'=> implode('>', $this->getCategoryPath(true)),
+        	'g:brand'		=> is_object($this->getProduct()->getResource()
+	            ->getAttribute('manufacturer')) ? $this->getProduct()->getAttributeText('manufacturer') : '',
+        	'g:upc'			=> $this->getProduct()->getSku(),
+        	'g:quantity'	=> $this->getProduct()->isSaleable(),	
+	        'g:visibility'	=> $this->getProduct()->getVisibility(),	    
          
-            // e Namespace
-            'e:locakey'      => substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2),
+        	// e Namespace
+        	'e:locakey'		=> substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2),
         
-            // c Namespace
-            'c:mgtproducttype'    => $product->getTypeId(),     
-                        
-        );
-        
-	$crossSellIds=$this->_getCrossSellIds($product,'id');
-	if (count($crossSellIds)>0) {
-	  $data['c:crosssell_id'] = implode(';',$crossSellIds);
-	  $data['c:crosssell_sku'] = implode(';',$this->_getCrossSellIds($product,'sku'));
-	} // if
-        
-        
-        // set Product variant
-        if(isset($parentProduct[0])){
-            $data['e:variant_of'] = $parentProduct[0];
-            $data['c:mgt_parents'] = implode(';', $parentProduct);
-        }
-        if($product->isConfigurable() 
-            && $product->getTypeInstance(true) instanceof Mage_Catalog_Model_Product_Type_Configurable){
-            $data['e:variants_id'] = implode(';', $this->_getVariantIds($product));
-            $data['e:variants_sku'] = implode(';', $this->_getVariantIds($product, 'sku'));
-        }        
-        
-        // add Product Attributes
-        $attributes = $this->getProductAttributes();
-        foreach($attributes as $key => $value){
-            $data['c:'.$key] = $value;
-        }
-        
-        // translate array to XML
+        	// c Namespace
+        	'c:mgtproducttype'	=> $product->getTypeId(),     
+        	        	
+		);
+		
+		
+		
+		// set Product variant
+		if(isset($parentProduct[0])){
+			$data['e:variant_of'] = $parentProduct[0];
+			$data['c:mgt_parents'] = implode(';', $parentProduct);
+		}
+    	if($product->isConfigurable() 
+    		&& $product->getTypeInstance(true) instanceof Mage_Catalog_Model_Product_Type_Configurable){
+			$data['e:variants_id'] = implode(';', $this->_getVariantIds($product));
+			$data['e:variants_sku'] = implode(';', $this->_getVariantIds($product, 'sku'));
+		}		
+		
+		// add Product Attributes
+		$attributes = $this->getProductAttributes();
+		foreach($attributes as $key => $value){
+			$data['c:'.$key] = $value;
+		}
+		
+		// translate array to XML
         $this->dataToXml($data, 'data', $elemItem, $xmlObj); 
 
         // add Product to Channel Element
@@ -210,26 +200,7 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
         $product->setTypeInstance($this->_productTypeInstances[$type], true);
         return $this;
     }    
-
-     /**
-     * get Product CrossSells
-     * 
-     * @param Mage_Catalog_Model_Product $product
-     * @return array
-     */
-    protected function _getCrossSellIds($product, $type = 'id'){
     
-	$childProducts = $product->getCrossSellProducts();
-        foreach((array) $childProducts as $childProduct){
-            if ($type == 'id') {
-                $childProductIds[] = $childProduct->getId();
-            } else {
-                $childProductIds[] = $childProduct->getSku();
-            }
-        }
-        return $childProductIds;    
-    }     // _getCrossSellIds
-
     /**
      * get Product Variants
      * 
@@ -238,16 +209,18 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
      */
     protected function _getVariantIds($product, $type = 'id'){
     
-        $childProducts = $product->getTypeInstance(true)->getUsedProducts(null, $product);
-        $childProductIds = array();
-        foreach((array) $childProducts as $childProduct){
-            if ($type == 'id') {
-                $childProductIds[] = $childProduct->getId();
-            } else {
-                $childProductIds[] = $childProduct->getSku();
-            }
-        }
-        return $childProductIds;    
+    	$childProducts = $product->getTypeInstance(true)->getUsedProducts(null, $product);
+    	$childProductIds = array();
+		foreach((array) $childProducts as $childProduct){
+			if ($childProduct->isSaleable()) {
+				if ($type == 'id') {
+			        $childProductIds[] = $childProduct->getId();
+				} else {
+			        $childProductIds[] = $childProduct->getSku();
+				}
+			}
+		}
+		return $childProductIds;    
     }     
     
     /**
@@ -257,7 +230,7 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
      */
     public function getProduct()
     {
-        return $this->getData('product');
+    	return $this->getData('product');
     }   
     
 
@@ -268,72 +241,72 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
      */
     public function getCategory()
     {
-        return $this->getData('category');
+    	return $this->getData('category');
     }     
       
 
-    /**
-     * The main function for converting to an XML document.
-     * Pass in a multi dimensional array and this recrusively loops through and builds up an XML document.
-     *
-     * @param array $data
-     * @param string $rootNodeName - what you want the root node to be - defaultsto data.
-     * @param DomElement $elem - should only be used recursively
-     * @param DOMDocument $xml - should only be used recursively
-     * @return object DOMDocument
-     */
-    protected function dataToXml($data, $rootNodeName = 'data', $elem=null, $xml=null)
-    {
-        
-        if ($xml === null)
-        {
-            $xml = new DOMDocument("1.0", "UTF-8");
-            $xml->formatOutput = true;
-            $elem = $xml->createElement( $rootNodeName );
-              $xml->appendChild( $elem );
-        }
-        
-        // loop through the data passed in.
-        foreach($data as $key => $value)
-        {
-            // no numeric keys in our xml please!
-            if (is_numeric($key))
-            {
-                // make string key...
-                $key = "node_". (string) $key;
-            }
-            
-            // replace anything not alpha numeric
-            $key = preg_replace('/[^a-z0-9\_\:]/i', '', $key);
-            
-            // if there is another array found recrusively call this function
-            if (is_array($value))
-            {
-                $subelem = $xml->createElement( $key );
-                $elem->appendChild( $subelem);
-                
-                // recrusive call.
-                $this->DataToXml($value, $rootNodeName, $subelem, $xml);
-            }
-            else 
-            {
-                $subelem = $xml->createElement( $key );
-                $subelem->appendChild(
-                    (
-                        strpos($value, '<')
-                        or strpos($value, '>')
-                        or strpos($value, '&')
-                    )
-                    ? $xml->createCDATASection( $value )
-                    : $xml->createTextNode( $value )
-                );
-                $elem->appendChild( $subelem );
+	/**
+	 * The main function for converting to an XML document.
+	 * Pass in a multi dimensional array and this recrusively loops through and builds up an XML document.
+	 *
+	 * @param array $data
+	 * @param string $rootNodeName - what you want the root node to be - defaultsto data.
+	 * @param DomElement $elem - should only be used recursively
+	 * @param DOMDocument $xml - should only be used recursively
+	 * @return object DOMDocument
+	 */
+	protected function dataToXml($data, $rootNodeName = 'data', $elem=null, $xml=null)
+	{
+		
+		if ($xml === null)
+		{
+			$xml = new DOMDocument("1.0", "UTF-8");
+			$xml->formatOutput = true;
+			$elem = $xml->createElement( $rootNodeName );
+  			$xml->appendChild( $elem );
+		}
+		
+		// loop through the data passed in.
+		foreach($data as $key => $value)
+		{
+			// no numeric keys in our xml please!
+			if (is_numeric($key))
+			{
+				// make string key...
+				$key = "node_". (string) $key;
+			}
+			
+			// replace anything not alpha numeric
+			$key = preg_replace('/[^a-z0-9\_\:]/i', '', $key);
+			
+			// if there is another array found recrusively call this function
+			if (is_array($value))
+			{
+				$subelem = $xml->createElement( $key );
+				$elem->appendChild( $subelem);
+				
+				// recrusive call.
+				$this->DataToXml($value, $rootNodeName, $subelem, $xml);
+			}
+			else 
+			{
+				$subelem = $xml->createElement( $key );
+				$subelem->appendChild(
+					(
+						strpos($value, '<')
+						or strpos($value, '>')
+						or strpos($value, '&')
+					)
+					? $xml->createCDATASection( $value )
+					: $xml->createTextNode( $value )
+				);
+				$elem->appendChild( $subelem );
 
-            }
-        }
-        
-        // pass back as DOMDocument object
-        return $xml;
-    }    
+			}
+		}
+		
+		// pass back as DOMDocument object
+		return $xml;
+	}	
     
 }
