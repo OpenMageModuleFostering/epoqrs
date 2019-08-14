@@ -29,10 +29,10 @@ class Flagbit_EpoqInterface_Block_Track_User extends Flagbit_EpoqInterface_Block
     	}
         
 		return $this->getJavascriptOutput(
-					$this->arrayToString(
-						$this->getParamsArray()
-					), 
-					'');        
+            $this->arrayToString(
+                $this->getParamsArray()
+            ),
+            '');
     }
 
     /**

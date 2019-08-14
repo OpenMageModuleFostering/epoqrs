@@ -1,5 +1,3 @@
-jQuery.noConflict();
-
 function addRecommendationsToPage(recommendationPids, recommendationId, data, section)
 {
 		var recWidgetFromShopURL = epoq_baseUrl + "epoqinterface/recommendation/list?";  
@@ -16,10 +14,17 @@ function addRecommendationsToPage(recommendationPids, recommendationId, data, se
 			 cache: false,
 			 success: function(html){
 				jQuery("#epoqWidget1").append(html);   //alter here for auto tracking clicks on recommendations
-				jQuery("#epoqWidget1 a").each( function()
-				{
-					this.href = this.href + "&eqrecqid=" + recommendationId;
-				});
+                jQuery("#epoqWidget1 a").each( function()
+                {
+                     if(this.href.indexOf("?") !== -1) {
+                         this.href+="&";
+                     } else {
+                         this.href+="?";
+                     }
+
+                     this.href += "recommendation_id=" + recommendationId;
+                });
+
 			 },
 			 reccommands: {}
 		});

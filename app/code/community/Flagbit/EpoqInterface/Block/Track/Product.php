@@ -68,7 +68,7 @@ class Flagbit_EpoqInterface_Block_Track_Product extends Flagbit_EpoqInterface_Bl
     		'epoq_attributes'	=> $this->getProductAttributes(),
     		'epoq_locakey'		=> substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2),
     	    'epoq_tag'          => Mage::helper('epoqinterface')->getCookieStatus(),
-    	    'epoq_d_rules'        => Mage::getStoreConfig(Flagbit_EpoqInterface_Block_Abstract::XML_RULE_PRODUCT),
+    	    'epoq_d_rules'      => Mage::getStoreConfig(Flagbit_EpoqInterface_Block_Abstract::XML_RULE_PRODUCT),
     	    'epoq_section'      => 'product',
     	);
 
