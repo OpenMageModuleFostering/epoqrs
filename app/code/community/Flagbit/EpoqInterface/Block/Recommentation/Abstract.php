@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 238 2009-07-03 09:22:08Z weller $
+* @version $Id: Abstract.php 466 2010-07-08 12:30:54Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -28,7 +28,7 @@ class Flagbit_EpoqInterface_Block_Recommentation_Abstract extends Mage_Catalog_B
     protected function _prepareData()
     {
     	
-        $this->_itemCollection = Mage::getSingleton($this->_collectionModel)->getCollection()
+        $this->_itemCollection = Mage::getSingleton($this->_collectionModel, $this->getData())->getCollection()
             ->addStoreFilter();
 
         Mage::getResourceSingleton('checkout/cart')->addExcludeProductFilter($this->_itemCollection,

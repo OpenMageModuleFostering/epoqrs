@@ -93,6 +93,7 @@ class Flagbit_EpoqInterface_Model_Abstract extends Mage_Core_Model_Abstract {
 				)
 			);
 		}
+		var_dump($this->_restClient->getHttpClient());
 		
 		return $this->_restClient;
 	}   

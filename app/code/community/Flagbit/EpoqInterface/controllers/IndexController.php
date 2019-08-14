@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: IndexController.php 249 2010-03-11 10:50:33Z weller $
+* @version $Id: IndexController.php 466 2010-07-08 12:30:54Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -29,10 +29,17 @@ class Flagbit_EpoqInterface_IndexController extends Mage_Core_Controller_Front_A
     		$this->setFlag('', self::FLAG_NO_DISPATCH, true);	
     	}
     	
-    	$username = Mage::getStoreConfig(self::XML_AUTH_USERNAME_PATH);
+    	//$username = Mage::getStoreConfig(self::XML_AUTH_USERNAME_PATH);
     	$password = Mage::getStoreConfig(self::XML_AUTH_PASSWORD_PATH);
     	
+    	if(!empty($password) 
+    		&& $password != $this->getRequest()->getParam('pass')){
+    			
+    		$this->setFlag('', self::FLAG_NO_DISPATCH, true);
+    	}       	
+    	   	
     	// Authentication 
+    	/*
     	if(!empty($username)
     		&& !empty($password)
     		&& ($this->getRequest()->getServer('PHP_AUTH_USER') != $username
@@ -42,7 +49,7 @@ class Flagbit_EpoqInterface_IndexController extends Mage_Core_Controller_Front_A
 	    	$this->getResponse()->setHeader('WWW-authenticate', 'basic realm="epoq Interface"', true);
 	    	$this->getResponse()->sendHeaders();
 	    	$this->setFlag('', self::FLAG_NO_DISPATCH, true);
-    	}
+    	}*/
     	
         return parent::preDispatch();
     }	
@@ -55,8 +62,8 @@ class Flagbit_EpoqInterface_IndexController extends Mage_Core_Controller_Front_A
 	
 	public function productlistAction(){
 			
-		//$this->getResponse()->setHeader('Content-type', 'text/plain; charset=UTF-8');
-		$this->getResponse()->setHeader('Content-type', 'text/xml; charset=UTF-8');
+		$this->getResponse()->setHeader('Content-type', 'text/plain; charset=UTF-8');
+		//$this->getResponse()->setHeader('Content-type', 'text/xml; charset=UTF-8');
         $this->loadLayout(false);
         $this->renderLayout();			
 	}

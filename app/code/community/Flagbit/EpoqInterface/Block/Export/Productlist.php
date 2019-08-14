@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Productlist.php 249 2010-03-11 10:50:33Z weller $
+* @version $Id: Productlist.php 466 2010-07-08 12:30:54Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -132,6 +132,9 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
         	
         	// e Namespace
         	'e:locakey'		=> substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2),
+        
+        	// c Namespace
+        	'c:mgtproducttype'	=> $product->getTypeId(),        
         	
 		);
 		

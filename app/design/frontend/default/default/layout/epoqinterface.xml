@@ -12,7 +12,7 @@
     * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
     * Public License for more details.                                       *
     *                                                                        *
-    * @version $Id: epoqinterface.xml 248 2010-03-11 09:52:13Z weller $
+    * @version $Id: epoqinterface.xml 466 2010-07-08 12:30:54Z weller $
     * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
     */
 -->
@@ -28,7 +28,9 @@
         <reference name="content"> 
             <block type="epoqinterface/track_product" name="epoqinterface.track.product"/>
             <reference name="product.info.additional">
-                <block type="epoqinterface/recommentation_product" name="epoqinterface.recommendation.product"  template="epoqinterface/recommendation/product.phtml"/>            
+                <block type="epoqinterface/recommentation_product" name="epoqinterface.recommendation.product"  template="epoqinterface/recommendation/product.phtml">
+                	<!-- <action method="setRules"><rules>name(value)</rules></action> -->
+				</block>            
             </reference>  
         </reference>
     </catalog_product_view>
