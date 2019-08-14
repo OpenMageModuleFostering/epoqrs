@@ -25,9 +25,11 @@ class Flagbit_EpoqInterface_Model_Abstract extends Mage_Core_Model_Abstract {
     const XML_MAX_ATTEMPTS_PATH			= 'epoqinterface/error_handling/max_attempts';	
     const XML_IDLE_TIME_PATH			= 'epoqinterface/error_handling/idle_time';	
     const XML_DEMO_PATH					= 'epoqinterface/config/demo';	
-	const CACHE_REQUEST_FAILURE_COUNTER	= 'epoqinterface_rest_failure_counter';
+    const XML_DEMO_ITEMS_AMOUNT         = 'epoqinterface/config/demo_items';	
+    const CACHE_REQUEST_FAILURE_COUNTER	= 'epoqinterface_rest_failure_counter';
 	const CACHE_REQUEST_FAILURE_TIME	= 'epoqinterface_rest_failure_time';
-    
+	const XML_AJAX_ENABLED   	        = 'epoqinterface/config/ajax';
+	
 	protected $_restClient= null;
 	
 
@@ -39,33 +41,46 @@ class Flagbit_EpoqInterface_Model_Abstract extends Mage_Core_Model_Abstract {
      */
     protected function _doRequest(){
     	
-    	// error handling
+        // only do REST request if ajax mode is disabled.
+        if (Mage::getStoreConfig(self::XML_AJAX_ENABLED)) {
+            return null;
+        }
+
+        // error handling
     	if($this->getIsErrorHandling() 
     		&& $this->getFailureCount() >= Mage::getStoreConfig(self::XML_MAX_ATTEMPTS_PATH)
     		&& $this->getRequestFailureTime() > time()){
-
+			Mage::helper('epoqinterface/debug')->log('error handling is on: '.$this->getRequestFailureTime().' > '.time());
     		return null;
     	}
     	
     	try{
     		/*@var $result Zend_Rest_Client_Result */
 			$result = $this->getRestClient()->get();
-
-    	}catch (Exception $e){
 			
-    		// developer mode
-    		if(Mage::getIsDeveloperMode()){
-    			
-    			Zend_Debug::dump($this->getRestClient()->getUri()->getUri());
-    			Zend_Debug::dump($this->getRestClient()->getHttpClient()->getLastResponse());   			
-    			throw $e;
-
-    		// error handling
-    		}elseif($this->getIsErrorHandling()){
-    			
-    			$this->updateRequestFailureTime();
-    			$this->updateFailureCount();	
-    		}
+    		Mage::helper('epoqinterface/debug')
+    			->log('Request URI: '.$this->getRestClient()->getUri()->getUri())
+    			->log('Response: '.$this->getRestClient()->getHttpClient()->getLastResponse()->asString());			
+ 		  			
+    	}catch (Exception $e){
+            if(strpos($e->getMessage(), 'simplexml') === false){
+        		// developer mode
+        		if(Mage::getIsDeveloperMode()){
+        			
+    	    		Mage::helper('epoqinterface/debug')
+    	    			->log('Exception: '.$e->getMessage())
+    		    		->log('Request URI: '.$this->getRestClient()->getUri()->getUri())
+    		    		->log('Response: '.$this->getRestClient()->getHttpClient()->getLastResponse()->asString());		
+    	    			   			
+        			throw $e;
+    
+        		// error handling
+        		}elseif($this->getIsErrorHandling()){
+        			
+        			$this->updateRequestFailureTime();
+        			$this->updateFailureCount();	
+        		}
+            }
     		return null;
     	}
 	

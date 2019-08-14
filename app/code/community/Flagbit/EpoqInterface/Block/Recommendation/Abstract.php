@@ -11,12 +11,14 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 466 2010-07-08 12:30:54Z weller $
+* @version $Id: Abstract.php 574 2010-11-19 08:19:43Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
-class Flagbit_EpoqInterface_Block_Recommentation_Abstract extends Mage_Catalog_Block_Product_Abstract
+class Flagbit_EpoqInterface_Block_Recommendation_Abstract extends Mage_Catalog_Block_Product_Abstract
 {
+    const XML_USING_AJAX        = 'epoqinterface/config/ajax';
+
     protected $_columnCount = 4;
 
     protected $_items;
@@ -24,33 +26,46 @@ class Flagbit_EpoqInterface_Block_Recommentation_Abstract extends Mage_Catalog_B
     protected $_itemCollection;
 
     protected $_itemLimits = array();
-
+    
     protected function _prepareData()
     {
-    	
-        $this->_itemCollection = Mage::getSingleton($this->_collectionModel, $this->getData())->getCollection()
-            ->addStoreFilter();
-
-        Mage::getResourceSingleton('checkout/cart')->addExcludeProductFilter($this->_itemCollection,
-            Mage::getSingleton('checkout/session')->getQuoteId()
-        );
-        $this->_addProductAttributesAndPrices($this->_itemCollection);
-
-        Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($this->_itemCollection);
-
-        if ($this->getItemLimit('upsell') > 0) {
-            $this->_itemCollection->setPageSize($this->getItemLimit('upsell'));
+//         Zend_Debug::dump($this->getRule());
+        // only necessary if ajax is disabled
+        if (!Mage::getStoreConfig(self::XML_USING_AJAX)) {
+            
+            $this->_itemCollection = Mage::getSingleton($this->_collectionModel, $this->getData())->getCollection($this->getRule())
+                ->addStoreFilter();
+    
+            Mage::getResourceSingleton('checkout/cart')->addExcludeProductFilter($this->_itemCollection,
+                Mage::getSingleton('checkout/session')->getQuoteId()
+            );
+            $this->_addProductAttributesAndPrices($this->_itemCollection);
+    
+            Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($this->_itemCollection);
+    
+            if ($this->getItemLimit('upsell') > 0) {
+                $this->_itemCollection->setPageSize($this->getItemLimit('upsell'));
+            }
+            
+            $this->_itemCollection->load();
+    
+            foreach ($this->_itemCollection as $product) {
+                $product->setDoNotUseCategoryId(true);
+            }
         }
-
-        $this->_itemCollection->load();
-
-        foreach ($this->_itemCollection as $product) {
-            $product->setDoNotUseCategoryId(true);
-        }
-
         return $this;
     }
 
+	/**
+	 * get Session
+	 *
+	 * @return Flagbit_EpoqInterface_Model_Session
+	 */
+	protected function getSession(){
+		
+		return Mage::getSingleton('epoqinterface/session');
+	}    
+    
     protected function _beforeToHtml()
     {    	
     	$this->_prepareData();

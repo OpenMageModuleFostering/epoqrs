@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*                                                                       *
 * This script is part of the epoq Recommendation Service project         *
 *                                                                        *
@@ -11,13 +11,27 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: User.php 238 2009-07-03 09:22:08Z weller $
+* @version $Id: Abstract.php 5 2009-07-03 09:22:08Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
-
-class Flagbit_EpoqInterface_Model_Recommendation_User extends Flagbit_EpoqInterface_Model_Recommendation_Abstract
+class Flagbit_EpoqInterface_Model_System_Config_Source_Identifier
 {
-    /** @var string */
-	protected $_section = 'user';
+	/**
+	 * get Authtypes as Option Array
+	 * 
+	 * @return array
+	 */
+    public function toOptionArray()
+    {
+        return array(
+            array(
+                'value' => 'entity_id',
+                'label' => Mage::helper('epoqinterface')->__('Product ID (default)')
+            ),
+            array(
+                'value' => 'sku',
+                'label' => Mage::helper('epoqinterface')->__('Product SKU')
+            )
+        );
+    }
 }
-

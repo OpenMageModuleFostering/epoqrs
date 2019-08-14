@@ -11,13 +11,34 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: User.php 238 2009-07-03 09:22:08Z weller $
+* @version $Id: Data.php 583 2010-11-26 10:08:21Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
-
-class Flagbit_EpoqInterface_Model_Recommendation_User extends Flagbit_EpoqInterface_Model_Recommendation_Abstract
+class Flagbit_EpoqInterface_Helper_Debug extends Mage_Core_Helper_Abstract
 {
-    /** @var string */
-	protected $_section = 'user';
-}
+	const LOG_FILE_NAME = 'epoq.log';
+	
+	/**
+	 * XML Config Path to Product Identifier Setting
+	 * 
+	 * @var string
+	 */
+    const XML_CONFIG_PATH_DEBUG_MODE = 'epoqinterface/config/debug';
+	
+	/**
+	 * Debug Log to file var/log/epoq.log
+	 * 
+	 * @param $message
+	 * @param $level
+	 * @param $file
+	 * @param $forceLog
+	 */
+	public function log($message)
+	{
 
+		if(Mage::getStoreConfig(self::XML_CONFIG_PATH_DEBUG_MODE)) {
+			Mage::log($message, null, self::LOG_FILE_NAME, true);
+		}
+		return $this;
+	}
+}

@@ -11,13 +11,19 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 466 2010-07-08 12:30:54Z weller $
+* @version $Id: Abstract.php 666 2011-07-06 13:44:33Z rieker $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
-class Flagbit_EpoqInterface_Model_Recommendation_Abstract extends Flagbit_EpoqInterface_Model_Abstract {
-	
-	
+class Flagbit_EpoqInterface_Model_Recommendation_Abstract extends Flagbit_EpoqInterface_Model_Abstract
+{
+    
+    /** @var array $_collection **/
+    protected $_collection = array();
+    
+    /** @var Zend_Rest_Client_Result $_result **/
+    protected $_result;
+    
     /**
      * Constructor
      *
@@ -33,102 +39,132 @@ class Flagbit_EpoqInterface_Model_Recommendation_Abstract extends Flagbit_EpoqIn
         $this->_data = $args[0];
 
         $this->_construct();
-    	 
-    	// get Data
-		$result = $this->_doRequest();
-		if(!$result instanceof Zend_Rest_Client_Result){
-			return;
-		}
 
-		// generate product ID array
-		$productIds = array();
-		if($result->getIterator() instanceof SimpleXMLElement){
-			
-			foreach($result->getIterator()->recommendation as $product){
-				$productIds[] = (int) $product->productId;
-			
-			}
-		}
-		
-		// set Data
-		$this->setProductIds($productIds);
-		$this->setRecommendationId((string) $result->getIterator()->recommendationId);  
-
-		$this->getSession()->setLastRecommentationId($this->getRecommendationId());
-		$this->getSession()->setLastRecommentationProducts($this->getProductIds());
-		
+        // get Data
+        $this->_result = $this->_doRequest();
     }
-    
 
+    
     /**
      * get Product Collection
      *
+     * @param string $rule
      * @return Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection
      */
-    public function getCollection(){
-    	
-    	/*@var $collection Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
-    	$collection = Mage::getResourceModel('catalog/product_collection');
-    	
-    	$collection->addIdFilter($this->getProductIds());
-    	return $collection;
-    }	
-	
-	/**
-	 * return Zend Rest Client
-	 *
-	 * @return Zend_Rest_Client
-	 */
-	public function getRestClient(){
+    public function getCollection($rule = 'default')
+    {
+        if (empty($this->_collection[$rule])) {
+            /*@var $collection Flagbit_EpoqInterface_Model_Rescource_Eav_Mysql4_Product_Collection */
+            $this->_collection[$rule] = Mage::getResourceModel('epoqinterface/product_collection');
+            $this->_collection[$rule]->setProductIds($this->_getProductIdsByRule($rule));
+            
+        }  
+        return $this->_collection[$rule];
+        
+    }    
 
-		if(!$this->_restClient instanceof Zend_Rest_Client) {
-			
-			$url = $this->getRestUrl().'getRecommendationsFor'.$this->_getRecommendationFor.'?'.$this->_httpBuildQuery($this->getParamsArray());
+    
+    /**
+     * return Zend Rest Client
+     *
+     * @return Zend_Rest_Client
+     */
+    public function getRestClient()
+    {
+        if (!$this->_restClient instanceof Zend_Rest_Client) {
+            if (array_key_exists('action', $this->getData()) && $this->getData('action') == 'processCart') {
+                $url = $this->getRestUrl().'processCart?'.$this->_httpBuildQuery($this->getParamsArray());
+            } else {
+                $url = $this->getRestUrl().'getRecommendations'.'?'.$this->_httpBuildQuery($this->getParamsArray());
+            }
+// Zend_Debug::dump($url);
+            $this->_restClient = new Zend_Rest_Client($url);
+            $this->_restClient->getHttpClient()->setConfig(
+                array(
+                    'timeout' => Mage::getStoreConfig(self::XML_TIMEOUT_PATH)
+                )
+            );
+        }
+        return $this->_restClient;
+    }
 
-			$this->_restClient = new Zend_Rest_Client($url);
-			$this->_restClient->getHttpClient()->setConfig(
-				array(
-					'timeout' => Mage::getStoreConfig(self::XML_TIMEOUT_PATH)
-				)
-			);
-		}
-		
-		return $this->_restClient;
-	}
-	
-	protected function _httpBuildQuery($array, $previousKey=''){
-		
-		$string = '';
-		foreach($array as $key => $value){
-			
-			if(is_array($value)){
-				$string .= ($string ? '&' : '').$this->_httpBuildQuery($value, $key);
-				continue;
-			}
-			
-			$string .= ($string ? '&' : '').(is_numeric($key) && $previousKey ? $previousKey : $key ).($value ? '='.urlencode($value) : '');
-		}
-		return $string;
-	}
-	
-	
-    protected function getParamsArray(){
- 	
-    	$variables = array(
-    		'tenantId'		=> Mage::getStoreConfig(self::XML_TENANT_ID_PATH),
-    		'sessionId'		=> Mage::getSingleton('core/session')->getSessionId(),
-    		'demo'			=> Mage::getStoreConfig(self::XML_DEMO_PATH) ? 6 : 0,
-    		'widgetTheme'	=> 'xml',   
-    		'rules'			=> $this->getRules()
-    	); 
-    	
-    	if($customerId = Mage::getSingleton('customer/session')->getId()){
-    		$variables['customerId'] = $customerId;
-    	}
-    	
-    	return $variables;
-    }  	
-	
+    
+    /**
+     * 
+     * @param unknown_type $rule
+     */
+    protected function _getProductIdsByRule($rule = 'default')
+    {
+        // generate product ID array
+        $productIds = array();
+        
+        if ($this->_result instanceof Zend_Rest_Client_Result &&
+            $this->_result->getIterator() instanceof SimpleXMLElement) {
+                
+            foreach ($this->_result->getIterator()->domain as $domain)
+            {
+                $domainRule = (string)$domain->attributes()->rules;
+                
+                if ($rule == $domainRule) {
+                    foreach ($domain->recommendation as $product)
+                    {
+                         $productIds[] = (string) $product->productId;
+                    }
+                }
+            }
 
-	
+            // set Data
+            $this->setRecommendationId((string) $this->_result->getIterator()->domain->recommendationId);
+
+            $this->getSession()->setLastRecommendationId($this->getRecommendationId());
+            $this->getSession()->setLastRecommendationProducts($productIds);
+
+        }
+        
+        return $productIds;
+    }
+    
+    /**
+     * add parameters to url
+     * 
+     * @param array $array
+     * @param string/int $previousKey
+     * 
+     * @return string $string
+     */
+    protected function _httpBuildQuery($array, $previousKey='')
+    {
+        $string = '';
+        foreach ($array as $key => $value) {
+            if (is_array($value)) {
+                $string .= ($string ? '&' : '').$this->_httpBuildQuery($value, $key);
+                continue;
+            }
+            $string .= ($string ? '&' : '').(is_numeric($key) && $previousKey ? $previousKey : $key ).($value ? '='.urlencode($value) : '');
+        }
+        return $string;
+    }
+
+    
+    /**
+     * (non-PHPdoc)
+     * @see Flagbit_EpoqInterface_Model_Abstract::getParamsArray()
+     */
+    protected function getParamsArray()
+    {
+        $variables = array(
+            'tenantId'       => Mage::getStoreConfig(self::XML_TENANT_ID_PATH),
+            'sessionId'      => Mage::getSingleton('core/session')->getSessionId(),
+            'demo'           => Mage::getStoreConfig(self::XML_DEMO_PATH) ? Mage::getStoreConfig(self::XML_DEMO_ITEMS_AMOUNT) : 0,
+            'widgetTheme'    => 'multixml',   
+            'rules'          => Mage::helper('epoqinterface')->getRulesForSection($this->_section,true)
+        ); 
+
+        if ($customerId = Mage::getSingleton('customer/session')->getId()) {
+            $variables['customerId'] = $customerId;
+        }
+
+        return $variables;
+    }
+    
 }

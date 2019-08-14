@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*                                                                       *
 * This script is part of the epoq Recommendation Service project         *
 *                                                                        *
@@ -15,9 +15,30 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
-class Flagbit_EpoqInterface_Model_Recommendation_User extends Flagbit_EpoqInterface_Model_Recommendation_Abstract
+class Flagbit_EpoqInterface_Block_Recommendation_User extends Flagbit_EpoqInterface_Block_Recommendation_Abstract
 {
-    /** @var string */
-	protected $_section = 'user';
-}
+	
+	protected $_collectionModel = 'epoqinterface/recommendation_user';
+    const XML_STATUS_PATH		= 'epoqinterface/display_recommendation/user';		
+    
+    /**
+     * Render block HTML
+     *
+     * @return string
+     */
+    protected function _toHtml()
+    {
+        if(!Mage::getStoreConfig(self::XML_STATUS_PATH)){
+        	return '';
+        }
 
+        if(Mage::getStoreConfig(self::XML_USING_AJAX)){
+        	$html = '';
+        	$html .= '<p id="epoqWidget1"></p>'."\n";
+        	$html .= '<script type="text/javascript" src="'.$this->getJsUrl('epoqinterface/epoq_recommendations.js').'"></script>'."\n";
+        	return $html;
+        }
+    	
+        return parent::_toHtml();
+    }	
+}

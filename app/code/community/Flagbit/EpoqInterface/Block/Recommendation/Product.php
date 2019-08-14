@@ -11,15 +11,15 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Product.php 238 2009-07-03 09:22:08Z weller $
+* @version $Id: Product.php 574 2010-11-19 08:19:43Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
-class Flagbit_EpoqInterface_Block_Recommentation_Product extends Flagbit_EpoqInterface_Block_Recommentation_Abstract
+class Flagbit_EpoqInterface_Block_Recommendation_Product extends Flagbit_EpoqInterface_Block_Recommendation_Abstract
 {
 	
 	protected $_collectionModel = 'epoqinterface/recommendation_product';
-    const XML_STATUS_PATH		= 'epoqinterface/display_recommendation/product';		
+    const XML_STATUS_PATH		= 'epoqinterface/display_recommendation/product';
 	
     /**
      * Render block HTML
@@ -31,7 +31,14 @@ class Flagbit_EpoqInterface_Block_Recommentation_Product extends Flagbit_EpoqInt
         if(!Mage::getStoreConfig(self::XML_STATUS_PATH)){
         	return '';
         }
+        
+        if(Mage::getStoreConfig(self::XML_USING_AJAX)){
+        	$html = '';
+        	$html .= '<p id="epoqWidget1"></p>'."\n";
+        	$html .= '<script type="text/javascript" src="'.$this->getJsUrl('epoqinterface/epoq_recommendations.js').'"></script>'."\n";
+        	return $html;
+        }
     	
         return parent::_toHtml();
-    }		
+    }
 }

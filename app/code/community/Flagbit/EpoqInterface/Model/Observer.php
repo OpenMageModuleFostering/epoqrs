@@ -11,12 +11,31 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Observer.php 248 2010-03-11 09:52:13Z weller $
+* @version $Id: Observer.php 915 2011-10-19 12:35:02Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
 class Flagbit_EpoqInterface_Model_Observer {
 	
+    
+    /**
+     * Add order information into epoq block to render on checkout success pages
+     *
+     * @param Varien_Event_Observer $observer
+     */
+    public function setTrackOnOrderSuccessPageView(Varien_Event_Observer $observer)
+    {
+        $orderIds = $observer->getEvent()->getOrderIds();
+        if (empty($orderIds) || !is_array($orderIds)) {
+            return;
+        }
+        $block = Mage::app()->getFrontController()->getAction()->getLayout()->getBlock('epoqinterface_track_order');      
+
+        if ($block) {
+            $block->setOrderIds($orderIds);
+        }
+    }    
+    
 	/**
 	 * get Session
 	 *
@@ -57,7 +76,7 @@ class Flagbit_EpoqInterface_Model_Observer {
 		
 		$this->getSession()->setCartUpdate('remove');
 	}
-	
+
 	
 	/**
 	 * Observer: salesOrderPlaceAfter
@@ -69,25 +88,8 @@ class Flagbit_EpoqInterface_Model_Observer {
 		/*@var $order Mage_Sales_Model_Order */
 		$order = $observer->getOrder();		
 		
-		Mage::getSingleton('epoqinterface/customer_profiles')->send($order);	
+		Mage::getSingleton('epoqinterface/customer_profiles')->send($order);
+		Mage::getSingleton('epoqinterface/order')->send($order);	
 	}
-	
-	/**
-	 * Observer: sales_order_place_before
-	 *
-	 * @param Varien_Event_Observer $observer
-	 */
-	public function salesOrderPlaceBefore($observer){
-		
-		$this->getSession()->setCartUpdate('process');
-		
-		/*@var $block Flagbit_EpoqInterface_Block_Track_Cart */
-		if(!($block = Mage::app()->getLayout()->getBlock('epoqinterface_track_order'))){
-			$block = Mage::app()->getLayout()->createBlock('epoqinterface/track_cart', 'epoqinterface_track_order');
-		}
 
-		$this->getSession()->setBlockTrackCartOutput($block->toHtml());
-		
-	}
-	
 }

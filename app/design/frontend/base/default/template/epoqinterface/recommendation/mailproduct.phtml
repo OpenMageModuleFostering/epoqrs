@@ -16,6 +16,42 @@
 */
 ?>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Epoq</title>
+    <style type="text/css">
+        * { margin: 0px; padding: 0px; }
+        
+        body { font-family: Arial, Helvetica, sans-serif; }
+        
+        table { border: 0 none; border-spacing: 0; empty-celss: show; font-size: 100%; }
+            th, td { font-weight: normal; text-align: left; vertical-align: top; }
+    
+        p { margin: 0 0 10px; }
+        a { color: #1E7EC8; text-decoration: underline; }
+        img { border: 0 none; vertical-align: top; }
+        
+        h4, h5 { color: #0A263E; line-height: 1.35em; margin: 0 0 5px; }
+        h4 { font-size: 14px; font-weight: bold; }
+        h5 { font-size: 12px; font-weight: bold; }
+        
+        .collateral-box { width: 635px; }
+        
+        .price-box { margin: 5px 0; }
+            .regular-price { color: #C76200; }
+                .regular-price .price { color: #C76200; font-size: 13px; font-weight: bold; }
+        
+        .ratings { font-size: 11px; line-height: 1.25em; }
+            .ratings .rating-box { display: block; float: none; margin: 0 0 3px; }
+                .rating-box { background: url("<?php echo $this->getSkinUrl('images/bkg_rating.gif'); ?>") repeat-x scroll 0 0 transparent; font-size: 0; height: 13px; line-height: 0; overflow: hidden; text-indent: -999em; width: 69px; } 
+                    .rating-box .rating { background: url("<?php echo $this->getSkinUrl('images/bkg_rating.gif'); ?>") repeat-x scroll 0 100% transparent; float: left; height: 13px; }
+            .ratings .rating-links .separator { margin: 0 2px; }
+        
+    </style>    
+</head>
+<body>
 <?php if(count($this->getItemCollection()->getItems())): ?>
 <div class="collateral-box up-sell">
     <div class="head"><h4><?php echo $this->__('epoq: You may also be interested in the following product(s)') ?></h4></div>
@@ -26,11 +62,11 @@
         <tr>
         <?php for($_j=0;$_j<$this->getColumnCount();$_j++): ?>
             <?php if($_link=$this->getIterableItem()): ?>
-            <td>
+            <td style="width: 175px;">
                 <p class="product-image"><a href="<?php echo $_link->getProductUrl() ?>" class="epoq-recommendation-link"><img src="<?php echo $this->helper('catalog/image')->init($_link, 'small_image')->resize(125) ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_link->getName()) ?>" /></a></p>
                 <h5><a href="<?php echo $_link->getProductUrl() ?>"  class="epoq-recommendation-link"><?php echo $this->htmlEscape($_link->getName()) ?></a></h5>
                 <?php echo $this->getPriceHtml($_link, true) ?>
-                <?php echo $this->getReviewsSummaryHtml($_link) ?>
+                <?php #echo $this->getReviewsSummaryHtml($_link) ?>
             </td>
             <?php else: ?>
             <td class="empty-product">&nbsp;</td>
@@ -39,22 +75,7 @@
         </tr>
     <?php endfor; ?>
     </table>
-    <script type="text/javascript">decorateTable('upsell-product-table')</script>
 </div>
-<script type="text/javascript">
-$$('a.epoq-recommendation-link').each(function(elem, index){
-	var newParam = 'recommendation_id=<?php echo $this->getSession()->getLastRecommendationId();?>';
-    if (elem.href.indexOf('recommendation_id') == '-1') {
-        params = elem.href.replace(new RegExp('[\?&]' + 'recommendation_id' + '[^&]*'), RegExp.$1 + newParam);
-        if (params === elem.href) {
-            if(elem.href.indexOf('?') == '-1'){
-        		params += '?' + newParam;
-            }else{
-            	params += '&' + newParam;
-            }
-        }
-        elem.href = params;
-    }
-});
-</script>
 <?php endif ?>
+</body>
+</html>

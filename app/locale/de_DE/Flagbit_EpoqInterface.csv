@@ -1,4 +1,4 @@
-"epoq Recommendation Service", "epoq Vorschlag-Service"
+"epoq Recommendation Service", "epoq Recommendation Service"
 "General Settings", "Allgemeine Einstellungen"
 "Timeout", "Zeitüberschreitung"
 "New Version %s ready for Download", "Neue Version %s fertig zum Download"
@@ -20,3 +20,7 @@
 "Export Settings", "Export Einstellungen"
 "Password", "Passwort"
 "Up to date", "Aktuell"
+"Using Ajax", "Ajax benutzen"
+"Product ID (default)", "Produkt-ID (Standard)"
+"Product Identifier", "Produkt Identifizierung"
+"Product SKU", "Produkt-SKU (Artikelnummer)"

@@ -15,12 +15,12 @@
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
-class Flagbit_EpoqInterface_Block_Recommentation_Cart extends Flagbit_EpoqInterface_Block_Recommentation_Abstract
+class Flagbit_EpoqInterface_Block_Recommendation_Cart extends Flagbit_EpoqInterface_Block_Recommendation_Abstract
 {
 	
 	protected $_collectionModel = 'epoqinterface/recommendation_cart';
     const XML_STATUS_PATH		= 'epoqinterface/display_recommendation/cart';	
-	
+    
     /**
      * Render block HTML
      *
@@ -30,6 +30,13 @@ class Flagbit_EpoqInterface_Block_Recommentation_Cart extends Flagbit_EpoqInterf
     {
         if(!Mage::getStoreConfig(self::XML_STATUS_PATH)){
         	return '';
+        }
+    	
+        if(Mage::getStoreConfig(self::XML_USING_AJAX)){
+        	$html = '';
+        	$html .= '<p id="epoqWidget1"></p>'."\n";
+        	$html .= '<script type="text/javascript" src="'.$this->getJsUrl('epoqinterface/epoq_recommendations.js').'"></script>'."\n";
+        	return $html;
         }
     	
         return parent::_toHtml();

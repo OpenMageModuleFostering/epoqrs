@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: user.phtml 237 2009-06-30 12:42:11Z weller $
+* @version $Id: user.phtml 487 2010-08-05 12:32:57Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 ?>
@@ -28,8 +28,8 @@
         <?php for($_j=0;$_j<$this->getColumnCount();$_j++): ?>
             <?php if($_link=$this->getIterableItem()): ?>
             <td>
-                <p class="product-image"><a href="<?php echo $_link->getProductUrl() ?>"><img src="<?php echo $this->helper('catalog/image')->init($_link, 'small_image')->resize(125) ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_link->getName()) ?>" /></a></p>
-                <h5><a href="<?php echo $_link->getProductUrl() ?>"><?php echo $this->htmlEscape($_link->getName()) ?></a></h5>
+                <p class="product-image"><a href="<?php echo $_link->getProductUrl() ?>" class="epoq-recommendation-link"><img src="<?php echo $this->helper('catalog/image')->init($_link, 'small_image')->resize(125) ?>" width="125" height="125" alt="<?php echo $this->htmlEscape($_link->getName()) ?>" /></a></p>
+                <h5><a href="<?php echo $_link->getProductUrl() ?>" class="epoq-recommendation-link"><?php echo $this->htmlEscape($_link->getName()) ?></a></h5>
                 <?php echo $this->getPriceHtml($_link, true) ?>
                 <?php echo $this->getReviewsSummaryHtml($_link) ?>
             </td>
@@ -42,4 +42,20 @@
     </table>
     <script type="text/javascript">decorateTable('upsell-product-table')</script>
 </div>
+<script type="text/javascript">
+$$('a.epoq-recommendation-link').each(function(elem, index){
+	var newParam = 'recommendation_id=<?php echo $this->getSession()->getLastRecommendationId();?>';
+    if (elem.href.indexOf('recommendation_id') == '-1') {
+        params = elem.href.replace(new RegExp('[\?&]' + 'recommendation_id' + '[^&]*'), RegExp.$1 + newParam);
+        if (params === elem.href) {
+            if(elem.href.indexOf('?') == '-1'){
+        		params += '?' + newParam;
+            }else{
+            	params += '&' + newParam;
+            }
+        }
+        elem.href = params;
+    }
+});
+</script>
 <?php endif ?>

@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Product.php 242 2009-08-25 14:15:49Z tuerk $
+* @version $Id: Product.php 583 2010-11-26 10:08:21Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -26,11 +26,11 @@ class Flagbit_EpoqInterface_Block_Track_Product extends Flagbit_EpoqInterface_Bl
      */
     protected function _construct(){
     		
-    	if($this->getSession()->getLastRecommentationId()
-    		&& $this->_lastRecommentationId === null){
-    		if(in_array($this->getProduct()->getId(), (array) $this->getSession()->getLastRecommentationProducts())){
+    	if($this->getSession()->getLastRecommendationId()
+    		&& $this->_lastRecommendationId === null){
+    		if(in_array($this->getProduct()->getData(Mage::helper('epoqinterface')->getIdFieldName()), (array) $this->getSession()->getLastRecommendationProducts())){
     		
-    			$this->_lastRecommentationId = $this->getSession()->getLastRecommentationId();
+    			$this->_lastRecommendationId = $this->getSession()->getLastRecommendationId();
     		}
     	}	
     	
@@ -55,7 +55,7 @@ class Flagbit_EpoqInterface_Block_Track_Product extends Flagbit_EpoqInterface_Bl
 	protected function getParamsArray(){
 		
     	$variables = array(
-    		'epoq_productId'	=> $this->getProduct()->getId(),
+    		'epoq_productId'	=> $this->getProduct()->getData(Mage::helper('epoqinterface')->getIdFieldName()),
     		'epoq_name'			=> $this->getProduct()->getName(),
     		'epoq_price'		=> $this->getProductPrice($this->getProduct()),
     		'epoq_productUrl'	=> $this->getProduct()->getProductUrl(),
@@ -66,9 +66,12 @@ class Flagbit_EpoqInterface_Block_Track_Product extends Flagbit_EpoqInterface_Bl
     		'epoq_description'	=> $this->getProduct()->getDescription(),
     		'epoq_inStock'		=> ($this->getProduct()->isSaleable() ? 'true' : 'false'),
     		'epoq_attributes'	=> $this->getProductAttributes(),
-    		'epoq_locakey'		=> substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2)
+    		'epoq_locakey'		=> substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2),
+    	    'epoq_tag'          => Mage::helper('epoqinterface')->getCookieStatus(),
+    	    'epoq_d_rules'      => Mage::getStoreConfig(Flagbit_EpoqInterface_Block_Abstract::XML_RULE_PRODUCT),
+    	    'epoq_section'      => 'product',
     	);
-    			
+
 		return array_merge(parent::getParamsArray(), $variables);
 	}
     

@@ -47,18 +47,17 @@
 </div>
 <script type="text/javascript">
 $$('a.epoq-recommendation-link').each(function(elem, index){
-	var newParam = 'recommendation_id=<?php echo $this->getSession()->getLastRecommendationId();?>';
-    if (elem.href.indexOf('recommendation_id') == '-1') {
-        params = elem.href.replace(new RegExp('[\?&]' + 'recommendation_id' + '[^&]*'), RegExp.$1 + newParam);
-        if (params === elem.href) {
-            if(elem.href.indexOf('?') == '-1'){
-        		params += '?' + newParam;
-            }else{
-            	params += '&' + newParam;
-            }
+	var newParam = 'recommendation_id=<?php echo $this->getSession()->getLastRecommendationId();?>',
+	params = '?' + newParam;
+    params = elem.href.replace(new RegExp('[\?&]' + 'recommendation_id' + '[^&]*'), '$1' + newParam);
+    if (params === elem.href) {
+        if(elem.href.indexOf('?') == '-1'){
+    		params += '?' + newParam;
+        }else{
+        	params += '&' + newParam;
         }
-        elem.href = params;
     }
+    elem.href = params;
 });
 </script>
 <?php endif ?>

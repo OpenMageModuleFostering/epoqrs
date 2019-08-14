@@ -11,55 +11,53 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Cart.php 238 2009-07-03 09:22:08Z weller $
+* @version $Id: Cart.php 666 2011-07-06 13:44:33Z rieker $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
 class Flagbit_EpoqInterface_Model_Recommendation_Cart extends Flagbit_EpoqInterface_Model_Recommendation_Abstract {
 
-	protected $_getRecommendationFor = 'Cart';
-    
-    protected function getParamsArray(){
-    	
-    	$params = parent::getParamsArray();
-    	
+    /** @var string */
+	protected $_section = 'cart';
+
+    protected function getParamsArray()
+    {
+        $params = parent::getParamsArray();
+
         $items = $this->getQuote()->getAllVisibleItems();
-		
-		/*@var $item Mage_Sales_Model_Quote_Item */
-		foreach ($items as $key => $item){
-	
-			if ($option = $item->getOptionByCode('simple_product')) {
-				
-            	$product = $option->getProduct();
-            	$variables['variantOf'][$key] = $item->getProduct()->getId();
-        	}else{
-        		$product = $item->getProduct();			
-        	}			
-			
-			$params['productId'][$key] = $product->getId();
-			$params['quantity'][$key] = $item->getQty();
-			$params['unitPrice'][$key] = $item->getPrice();
-		}    	
 
-		$params['updateCart'] = '';
-		
-    	return $params;
-    }      
+        /*@var $item Mage_Sales_Model_Quote_Item */
+        foreach ($items as $key => $item) {
+            if ($option = $item->getOptionByCode('simple_product')) {
+                $product = $option->getProduct();
+                $variables['variantOf'][$key] = $item->getProduct()->getData(Mage::helper('epoqinterface')->getIdFieldName());
+            } else {
+                $product = $item->getProduct();            
+            }
 
-	
+            $params['productId'][$key] = $product->getData(Mage::helper('epoqinterface')->getIdFieldName());
+            $params['quantity'][$key] = $item->getQty();
+            $params['unitPrice'][$key] = $item->getPrice();
+        }
+
+        $parentData = parent::getData();
+        if (!array_key_exists('action', $parentData)) {
+            $params['updateCart'] = '';
+        }
+
+        return $params;
+    }
+
     /**
      * get Quote
      *
      * @return Mage_Sales_Model_Quote
      */
-    protected function getQuote(){
-    	
-    	if($this->_quote === null){
-    		$this->_quote = Mage::getSingleton('checkout/cart')->getQuote();
-    	}
-    	
-    	return $this->_quote;
-    }	
-    
+    protected function getQuote()
+    {
+        if ($this->_quote === null) {
+            $this->_quote = Mage::getSingleton('checkout/cart')->getQuote();
+        }
+        return $this->_quote;
+    }
 }
-

@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 243 2009-08-25 14:34:49Z tuerk $
+* @version $Id: Abstract.php 673 2011-07-27 14:18:59Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -19,7 +19,16 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
 {
 
     const XML_TENANT_ID_PATH    = 'epoqinterface/config/tenant_id';		
-    protected $_lastRecommentationId = null;
+    const XML_AJAX_ENABLED   	= 'epoqinterface/config/ajax';	
+    const XML_DEMO_PATH			= 'epoqinterface/config/demo';	
+    const XML_DEMO_ITEMS_AMOUNT = 'epoqinterface/config/demo_items';	
+
+    const XML_RULE_CUSTOMER		= 'epoqinterface/display_recommendation/rule_customer';	
+    const XML_RULE_CART			= 'epoqinterface/display_recommendation/rule_cart';	
+    const XML_RULE_PRODUCT   	= 'epoqinterface/display_recommendation/rule_product';	
+    
+    protected $_lastRecommendationId = null;
+    protected $_product = null;
 	
     
     protected function arrayToString($array, $prefix = null){
@@ -39,16 +48,22 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
     	
     	$variables = array(
     		'epoq_tenantId'		=> Mage::getStoreConfig(self::XML_TENANT_ID_PATH),
-    		'epoq_sessionId'	=> Mage::getSingleton('core/session')->getSessionId(),
+    		'epoq_sessionId'	=> (!Mage::getStoreConfig(self::XML_AJAX_ENABLED) ? Mage::getSingleton('core/session')->getSessionId() : ''),
+    		'epoq_demoMode'		=> Mage::getStoreConfig(self::XML_DEMO_PATH) ? Mage::getStoreConfig(self::XML_DEMO_ITEMS_AMOUNT) : '',
+    		'epoq_baseUrl'		=> Mage::getBaseUrl(),
     	); 
     	
     	if($customerId = Mage::getSingleton('customer/session')->getId()){
     		$variables['epoq_customerId'] = $customerId;
     	}
     	
-    	if($this->_lastRecommentationId !== null){
-    		$variables['epoq_recommendationId'] = $this->_lastRecommentationId;
+    	if($this->getRequest()->getParam('recommendation_id')){
+    		$variables['epoq_recommendationId'] = $this->getRequest()->getParam('recommendation_id');
     	}
+    	/*
+    	if($this->_lastRecommendationId !== null){
+    		$variables['epoq_RecommendationId'] = $this->_lastRecommendationId;
+    	}*/
     	
     	return $variables;
     }    
@@ -57,7 +72,9 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
     	
     	$output  = "<script type=\"text/javascript\">\n";
     	$output .= $content."\n";
-    	$output .= "epoq_".$function."();\n";
+    	if ($function) {
+    	    $output .= "epoq_".$function."();\n";
+    	}
     	$output .= "</script>\n";
     	
     	return $output;
@@ -85,9 +102,8 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
 
 			$_taxHelper  = $this->helper('tax');
 			$_simplePricesTax = ($_taxHelper->displayPriceIncludingTax() || $_taxHelper->displayBothPrices());
-			$_minimalPriceValue = $product->getMinimalPrice();
-			return $_taxHelper->getPrice($product, $_minimalPriceValue, $_simplePricesTax);				
-			
+			$_minimalPriceValue = $product->getFinalPrice();
+			return $_taxHelper->getPrice($product, $_minimalPriceValue, $_simplePricesTax);						
 		}
 		
 		return $product->getFinalPrice();
@@ -121,7 +137,7 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
         $attributes = $product->getAttributes();
         foreach ($attributes as $attribute) {
 //            if ($attribute->getIsVisibleOnFront() && $attribute->getIsUserDefined() && !in_array($attribute->getAttributeCode(), $excludeAttr)) {
-            if ($attribute->getIsVisibleOnFront() && !in_array($attribute->getAttributeCode(), $excludeAttr)) {
+            if (($attribute->getIsVisibleOnFront() or $attribute->getIsSearchable() or $attribute->getIsFilterable()) && !in_array($attribute->getAttributeCode(), $excludeAttr)) {
 
                 $value = $attribute->getFrontend()->getValue($product);
 
@@ -188,10 +204,27 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
      * @return Mage_Catalog_Model_Product
      */
     public function getProduct()
-    {
-    	return Mage::registry('current_product');
+    {   
+    	if($this->_product === null){	
+    	    // always receive the id to load product. not whats set in the backend
+			$productId = Mage::helper('epoqinterface')->getProductId('entity_id');
+			$this->_product = Mage::getSingleton('catalog/product')->load($productId);
+    	}    	
+    	return $this->_product;
     }   
     
+    
+    /**
+     * Escape quotes in java scripts
+     *
+     * @param mixed $data
+     * @param string $quote
+     * @return mixed
+     */
+    public function jsQuoteEscape($data, $quote = '\'')
+    {
+        return $this->helper('core')->jsQuoteEscape($data, $quote);
+    }    
 
     /**
      * get current Category

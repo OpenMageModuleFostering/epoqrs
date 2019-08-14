@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: IndexController.php 466 2010-07-08 12:30:54Z weller $
+* @version $Id: IndexController.php 673 2011-07-27 14:18:59Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -23,7 +23,7 @@ class Flagbit_EpoqInterface_IndexController extends Mage_Core_Controller_Front_A
 	
     public function preDispatch()
     {
-		
+
     	// check if export is enabled
     	if(!Mage::getStoreConfig(self::XML_STATUS_PATH)){	
     		$this->setFlag('', self::FLAG_NO_DISPATCH, true);	
@@ -53,22 +53,19 @@ class Flagbit_EpoqInterface_IndexController extends Mage_Core_Controller_Front_A
     	
         return parent::preDispatch();
     }	
-	
-	public function indexAction(){
-		
-		$this->_forward('productlist');
-	}
-	
-	
+    
+    public function indexAction(){
+        $this->_forward('productlist');
+    }
+    
 	public function productlistAction(){
-			
 		$this->getResponse()->setHeader('Content-type', 'text/plain; charset=UTF-8');
 		//$this->getResponse()->setHeader('Content-type', 'text/xml; charset=UTF-8');
-        $this->loadLayout(false);
-        $this->renderLayout();			
+		
+		$this->getResponse()->setBody($this->getLayout()->createBlock('epoqinterface/export_productlist')->toHtml());		
 	}
 	
-	
+	 
 	/**
 	 * The main function for converting to an XML document.
 	 * Pass in a multi dimensional array and this recrusively loops through and builds up an XML document.

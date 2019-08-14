@@ -36,7 +36,13 @@ class Flagbit_EpoqInterface_Block_Head extends Mage_Core_Block_Abstract
     	$html .= 'document.write(unescape("%3Cscript src=\'" + eqJsHost + "rs.epoq.de/web-api/epoq.js\' type=\'text/javascript\'%3E%3C/script%3E"));' . "\n";
 		$html .= '//]]>' . "\n";
 		$html .= '</script>' . "\n";
-    	
+		
+		if(Mage::getStoreConfig(Flagbit_EpoqInterface_Block_Recommendation_Product::XML_USING_AJAX)){
+			$html .= '<script type="text/javascript" src="http://code.jquery.com/jquery-1.6.2.min.js"></script>'."\n";
+            $html .= '<script type="text/javascript" src="'.Mage::getBaseUrl(Mage_Core_Model_Store::URL_TYPE_JS).'epoqinterface/jQuery_init.js"></script>' . "\n";
+			$html .= '<script type="text/javascript" src="http://rs.epoq.de/web-api/epoqgo.js"></script>'."\n";
+		}
+		
         return $html;
     }
 }

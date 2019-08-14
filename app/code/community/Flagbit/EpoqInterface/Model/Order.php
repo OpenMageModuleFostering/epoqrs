@@ -11,13 +11,22 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: User.php 238 2009-07-03 09:22:08Z weller $
+* @version $Id: Cart.php 5 2009-07-03 09:22:08Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
-class Flagbit_EpoqInterface_Model_Recommendation_User extends Flagbit_EpoqInterface_Model_Recommendation_Abstract
+class Flagbit_EpoqInterface_Model_Order extends Flagbit_EpoqInterface_Model_Abstract
 {
-    /** @var string */
-	protected $_section = 'user';
+	/**
+	 * send Customer Data
+	 *
+	 * @param Mage_Sales_Model_Order $order
+	 */
+	public function send($order)
+	{
+	    $this->setAction('processCart');
+        // this will generate a duplicate processCart call in non-ajaxmode which is not necessary
+//        Mage::getSingleton('epoqinterface/recommendation_cart', $this->getData());
+	}
 }
 
