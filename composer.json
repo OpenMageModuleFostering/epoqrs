@@ -1,0 +1,16 @@
+{
+    "name": "OpenMageModuleFostering/epoqRS",
+    "type": "magento-module",
+    "license": "GPL",
+    "homepage": "",
+    "description": "Integrates the epoq Recommendation Service for improved product consulting and cross selling functionality.",
+    "authors": [
+    {
+        "name": "Flagbit Magento Team",
+        "email": "magento@flagbit.de"
+    }
+],
+    "suggest": {
+        "magento-hackathon/magento-composer-installer": "*"
+    }
+}
