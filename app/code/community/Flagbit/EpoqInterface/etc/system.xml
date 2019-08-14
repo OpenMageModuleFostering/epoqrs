@@ -12,7 +12,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: system.xml 7 2009-07-06 15:05:38Z weller $
+* @version $Id: system.xml 12 2009-08-25 14:57:47Z tuerk $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 -->
@@ -29,6 +29,7 @@
             <groups>
                 <config translate="label">
                     <label>General Settings</label>
+                    <comment>&lt;strong&gt;Please note&lt;/strong&gt;: &lt;a target="_blank" href="http://www.epoq.de/rs-magento.html"&gt;Get in touch with epoq&lt;/a&gt; to receive your TenantID. The documentation file can be found within the epoqRS module folder.</comment>
                     <frontend_type>text</frontend_type>
                     <sort_order>10</sort_order>
                     <show_in_default>1</show_in_default>
@@ -69,15 +70,15 @@
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
                         </demo> 
-                        <customer_profiles translate="label">
-                            <label>send Customer Profiles</label>
+                        <!-- customer_profiles translate="label">
+                            <label>Send Customer Profiles</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>40</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </customer_profiles>                         
+                        </customer_profiles -->                         
                     </fields>
                 </config>
                 <display_recommendation translate="label">
@@ -98,7 +99,7 @@
                             <show_in_store>1</show_in_store>
                         </cart>
                         <product translate="label">
-                            <label>Productview</label>
+                            <label>Product View</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>20</sort_order>
@@ -127,7 +128,7 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <enabled translate="label">
-                            <label>enabled</label>
+                            <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
@@ -164,7 +165,7 @@
                     <show_in_store>1</show_in_store>
                     <fields>
                         <enabled translate="label">
-                            <label>enabled</label>
+                            <label>Enabled</label>
                             <frontend_type>select</frontend_type>
                             <source_model>adminhtml/system_config_source_yesno</source_model>
                             <sort_order>10</sort_order>
@@ -174,7 +175,7 @@
                         </enabled>      
 
                         <max_attempts translate="label">
-                            <label>max Attemps</label>
+                            <label>Max Attempts</label>
                             <frontend_type>select</frontend_type>
                             <source_model>epoqinterface/system_config_source_attemps</source_model>
                             <sort_order>20</sort_order>

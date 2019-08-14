@@ -1,22 +1,22 @@
 "epoq Recommendation Service", "epoq Vorschlag-Service"
 "General Settings", "Allgemeine Einstellungen"
 "Timeout", "Zeitüberschreitung"
-"new Version %s ready for Download", "neue Version %s fertig zum Download"
+"New Version %s ready for Download", "Neue Version %s fertig zum Download"
 "Demo mode", "Demo Modus"
-"send Customer Profiles", "Kundeninformationen senden"
+"Send Customer Profiles", "Kundeninformationen senden"
 "%d Second", "%d Sekunde"
 "%d Seconds", "%d Sekunden"
 "Display Recommendations", "Empfehlungen anzeigen"
 "Cart", "Warenkorb"
-"Productview", "Artikelansicht"
+"Product View", "Artikelansicht"
 "My Account", "Mein Konto"
 "Error Handling", "Fehlerbehandlung"
-"enabled", "aktiviert"
-"max Attemps", "max. Versuche",
+"Enabled", "Aktiviert"
+"Max Attempts", "Max. Versuche",
 "Idle time", "Wartezeit"
 "%d Minutes", "%d Minuten",
 "%d Hour", "%d Stunde",
 "%d Hours", "%d Stunden",
 "Export Settings", "Export Einstellungen"
 "Password", "Passwort"
-"up to date", "aktuell"
+"Up to date", "Aktuell"

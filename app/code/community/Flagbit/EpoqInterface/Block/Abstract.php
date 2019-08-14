@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 5 2009-07-03 09:22:08Z weller $
+* @version $Id: Abstract.php 10 2009-08-25 14:34:49Z tuerk $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -29,7 +29,7 @@ class Flagbit_EpoqInterface_Block_Abstract extends Mage_Core_Block_Abstract
 			if(is_array($value)){
 				$output = array_merge($output, $this->arrayToString($value, $key));
 			}else{
-				$output[] = "	".($prefix ? $prefix."['".$key."']" : $key)." = '".addslashes($value)."';"; 
+				$output[] = "	".($prefix ? $prefix."['".$key."']" : $key)." = '".addslashes(str_replace(array("\r", "\n"), array('', ''), $value))."';"; 
 			}
 		}    	
     	return $prefix === null ? implode("\n", $output) : $output;

@@ -33,11 +33,11 @@ class Flagbit_EpoqInterface_Block_System_Config_Form_Field_Version extends Mage_
     		
 	    	if(version_compare($version, $curVersion, '>=')){
 	    		$icon = '<img src="'.$this->getSkinUrl('images/fam_bullet_success.gif').'" style="float: left; margin-right: 3px;"/>';
-	    		$notice = $this->__('up to date');
+	    		$notice = $this->__('Up to date');
 	    		
 	    	}elseif(version_compare($version, $curVersion, '<')){
 	    		$icon = '<img src="'.$this->getSkinUrl('images/error_msg_icon.gif').'" style="float: left; margin-right: 3px;"/>';
-	    		$notice = $this->__('new Version %s ready for Download', $curVersion);
+	    		$notice = $this->__('New Version %s ready for Download', $curVersion);
 	    	}
     	}
 

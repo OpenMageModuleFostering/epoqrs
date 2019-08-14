@@ -12,7 +12,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: config.xml 7 2009-07-06 15:05:38Z weller $
+* @version $Id: config.xml 9 2009-08-25 14:15:49Z tuerk $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 -->
@@ -20,7 +20,7 @@
     <modules>
         <Flagbit_EpoqInterface>
             <active>true</active>
-            <version>0.1.0</version>
+            <version>1.0.0</version>
         </Flagbit_EpoqInterface>
     </modules>
     

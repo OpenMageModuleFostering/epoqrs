@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Product.php 5 2009-07-03 09:22:08Z weller $
+* @version $Id: Product.php 9 2009-08-25 14:15:49Z tuerk $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -62,9 +62,9 @@ class Flagbit_EpoqInterface_Block_Track_Product extends Flagbit_EpoqInterface_Bl
     		'epoq_smallImage'	=> (string) $this->helper('catalog/image')->init($this->getProduct(), 'small_image')->resize(135, 135),
     		'epoq_category'		=> implode('>', $this->getCategoryPath()),
     		'epoq_brand'		=> $this->getProduct()->getManufacturer(),
-    		'epog_largeImage'	=> (string) $this->helper('catalog/image')->init($this->getProduct(), 'image'),
-    		'epog_description'	=> $this->getProduct()->getDescription(),
-    		'epoqinStock'		=> ($this->getProduct()->isSaleable() ? 'true' : 'false'),
+    		'epoq_largeImage'	=> (string) $this->helper('catalog/image')->init($this->getProduct(), 'image'),
+    		'epoq_description'	=> $this->getProduct()->getDescription(),
+    		'epoq_inStock'		=> ($this->getProduct()->isSaleable() ? 'true' : 'false'),
     		'epoq_attributes'	=> $this->getProductAttributes(),
     		'epoq_locakey'		=> substr(Mage::getSingleton('core/locale')->getLocale(), 0, 2)
     	);
