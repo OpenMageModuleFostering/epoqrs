@@ -12,7 +12,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: config.xml 9 2009-08-25 14:15:49Z tuerk $
+* @version $Id: config.xml 249 2010-03-11 10:50:33Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 -->
@@ -20,7 +20,7 @@
     <modules>
         <Flagbit_EpoqInterface>
             <active>true</active>
-            <version>1.0.0</version>
+            <version>1.0.1</version>
         </Flagbit_EpoqInterface>
     </modules>
     
@@ -90,7 +90,12 @@
                 </observers>                
             </sales_order_save_after>
         </events>	       
-        
+        <rewrite>
+            <epoqinterface>
+                <from><![CDATA[#^/epoqinterface/#]]></from>
+                <to>/epoqinterface/index/productlist/</to>
+            </epoqinterface>
+        </rewrite>        
         
     </global>
     
@@ -102,7 +107,6 @@
                 </epoqinterface>			
             </updates>
         </layout>
-        
 
         <routers>
             <epoqinterface>

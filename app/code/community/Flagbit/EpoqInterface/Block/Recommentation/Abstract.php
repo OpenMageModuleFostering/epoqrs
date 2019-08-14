@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 5 2009-07-03 09:22:08Z weller $
+* @version $Id: Abstract.php 238 2009-07-03 09:22:08Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 

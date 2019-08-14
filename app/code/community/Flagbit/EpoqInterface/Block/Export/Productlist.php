@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Productlist.php 6 2009-07-03 13:40:19Z weller $
+* @version $Id: Productlist.php 249 2010-03-11 10:50:33Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -26,7 +26,13 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
 		
 		// set Cache to one Hour
 		$this->setCacheLifetime(3600);   
-        $this->setCacheKey($this->getNameInLayout().Mage::app()->getStore()->getId());
+        $this->setCacheKey(
+        	$this->getNameInLayout().
+        	Mage::app()->getStore()->getId().
+        	$this->getRequest()->getParam('part', 1).
+        	$this->getRequest()->getParam('limit', 1000)
+        );
+        
 		parent::__construct();
 	}
 
@@ -55,12 +61,19 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
   			
 		// get Products
         $product = Mage::getModel('catalog/product');
+        
+        /*@var $products Mage_Catalog_Model_Resource_Eav_Mysql4_Product_Collection */
         $products = $product->getCollection()
             ->addStoreFilter()
             ->addAttributeToSort('news_from_date','desc')
             ->addAttributeToSelect(array('name', 'short_description', 'price', 'image'), 'inner');
             //->addAttributeToSelect(array('special_price', 'special_from_date', 'special_to_date'), 'left');
-
+            
+        // split Export in Parts 
+        if($this->getRequest()->getParam('part')){    
+        	$products->getSelect()->limitPage($this->getRequest()->getParam('part', 1), $this->getRequest()->getParam('limit', 1000));
+        }
+                
         Mage::getSingleton('catalog/product_status')->addVisibleFilterToCollection($products);
         Mage::getSingleton('catalog/product_visibility')->addVisibleInCatalogFilterToCollection($products);
 
@@ -85,6 +98,9 @@ class Flagbit_EpoqInterface_Block_Export_Productlist extends Flagbit_EpoqInterfa
     {
         $product = $args['product'];
         $this->setData('product', $product);
+        
+        // reset time limit
+        set_time_limit(30);		
        
         /*@var $product Mage_Catalog_Model_Product */
         $product->setData($args['row']);

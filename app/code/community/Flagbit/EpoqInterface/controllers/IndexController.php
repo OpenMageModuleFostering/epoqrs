@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: IndexController.php 5 2009-07-03 09:22:08Z weller $
+* @version $Id: IndexController.php 249 2010-03-11 10:50:33Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -54,8 +54,9 @@ class Flagbit_EpoqInterface_IndexController extends Mage_Core_Controller_Front_A
 	
 	
 	public function productlistAction(){
-		$this->getResponse()->setHeader('Content-type', 'text/plain; charset=UTF-8');
-		//$this->getResponse()->setHeader('Content-type', 'text/xml; charset=UTF-8');
+			
+		//$this->getResponse()->setHeader('Content-type', 'text/plain; charset=UTF-8');
+		$this->getResponse()->setHeader('Content-type', 'text/xml; charset=UTF-8');
         $this->loadLayout(false);
         $this->renderLayout();			
 	}

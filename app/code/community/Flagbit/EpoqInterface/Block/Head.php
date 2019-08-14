@@ -11,18 +11,32 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Head.php 5 2009-07-03 09:22:08Z weller $
+* @version $Id: Head.php 248 2010-03-11 09:52:13Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
 class Flagbit_EpoqInterface_Block_Head extends Mage_Core_Block_Abstract
 {
+	/**
+	 * Returns the tracking code part one
+	 * 
+	 * @return string
+	 */
     protected function _toHtml()
     {
+    	$html = '';
+    	
     	if (!$this->_beforeToHtml()) {
-    		return '';
+    		return $html;
     	}
 
-        return '<script type="text/javascript" src="http://rs.epoq.de/web-api/epoq.js"></script>';
+    	$html = '<script type="text/javascript">' . "\n";
+    	$html .= '//<![CDATA[' . "\n";
+    	$html .= 'var eqJsHost = (("https:" == document.location.protocol) ? "https://" : "http://");' . "\n";
+    	$html .= 'document.write(unescape("%3Cscript src=\'" + eqJsHost + "rs.epoq.de/web-api/epoq.js\' type=\'text/javascript\'%3E%3C/script%3E"));' . "\n";
+		$html .= '//]]>' . "\n";
+		$html .= '</script>' . "\n";
+    	
+        return $html;
     }
 }

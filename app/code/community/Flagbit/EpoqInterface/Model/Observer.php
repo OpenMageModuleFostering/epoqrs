@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Observer.php 8 2009-07-06 15:09:21Z weller $
+* @version $Id: Observer.php 248 2010-03-11 09:52:13Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -82,7 +82,9 @@ class Flagbit_EpoqInterface_Model_Observer {
 		$this->getSession()->setCartUpdate('process');
 		
 		/*@var $block Flagbit_EpoqInterface_Block_Track_Cart */
-		$block = Mage::app()->getLayout()->createBlock('epoqinterface/track_cart', 'epoqinterface_track_order');
+		if(!($block = Mage::app()->getLayout()->getBlock('epoqinterface_track_order'))){
+			$block = Mage::app()->getLayout()->createBlock('epoqinterface/track_cart', 'epoqinterface_track_order');
+		}
 
 		$this->getSession()->setBlockTrackCartOutput($block->toHtml());
 		

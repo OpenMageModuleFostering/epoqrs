@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Abstract.php 7 2009-07-06 15:05:38Z weller $
+* @version $Id: Abstract.php 246 2009-09-07 16:18:00Z tuerk $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 
@@ -26,6 +26,8 @@ class Flagbit_EpoqInterface_Model_Recommendation_Abstract extends Flagbit_EpoqIn
      */
     public function __construct()
     {
+    	
+    	  	
     	// get Data
 		$result = $this->_doRequest();
 		if(!$result instanceof Zend_Rest_Client_Result){
@@ -105,10 +107,12 @@ class Flagbit_EpoqInterface_Model_Recommendation_Abstract extends Flagbit_EpoqIn
 	
     protected function getParamsArray(){
     	
+    	
+    	
     	$variables = array(
     		'tenantId'		=> Mage::getStoreConfig(self::XML_TENANT_ID_PATH),
     		'sessionId'		=> Mage::getSingleton('core/session')->getSessionId(),
-    		'demo'			=> Mage::getStoreConfig(self::XML_DEMO_PATH) ? 0 : 6,
+    		'demo'			=> Mage::getStoreConfig(self::XML_DEMO_PATH) ? 6 : 0,
     		'widgetTheme'	=> 'xml'    	
     	); 
     	

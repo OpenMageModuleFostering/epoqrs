@@ -11,7 +11,7 @@
 * TABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General      *
 * Public License for more details.                                       *
 *                                                                        *
-* @version $Id: Data.php 5 2009-07-03 09:22:08Z weller $
+* @version $Id: Data.php 238 2009-07-03 09:22:08Z weller $
 * @license http://opensource.org/licenses/gpl-license.php GNU Public License, version 2
 */
 class Flagbit_EpoqInterface_Helper_Data extends Mage_Core_Helper_Abstract
